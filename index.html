@@ -6,10 +6,10 @@
     <title>ShoreSquad - Beach Cleanup Community</title>
     <meta name="description" content="Rally your crew, track weather, and join beach cleanups with ShoreSquad!">
     <link rel="stylesheet" href="css/styles.css">
-    <!-- Modern loading of fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Modern loading of fonts -->    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header class="header">
@@ -29,19 +29,37 @@
             <h1>Make Waves of Change</h1>
             <p>Join the movement to keep our beaches clean. Track weather, find cleanup events, and connect with other ocean lovers.</p>
             <button class="cta-button-large">Find Nearby Cleanups</button>
-        </section>
-
-        <section id="map" class="map-section">
-            <h2>Beach Cleanup Map</h2>
-            <div id="cleanup-map" class="map-container">
-                <!-- Map will be injected here by JavaScript -->
+        </section>        <section id="map" class="map-section">
+            <h2>Beach Cleanup Map</h2>            <div id="cleanup-map" class="map-container">                <iframe
+                    width="100%"
+                    height="450"
+                    style="border:0"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed/v1/view?key=AIzaSyDApdlBQ1ifZ4DU7OJ76I7CuYCEMKr9CGs&center=1.381497,103.955574&zoom=16&maptype=roadmap">
+                </iframe>
             </div>
-        </section>
-
-        <section id="weather" class="weather-section">
-            <h2>Beach Weather</h2>
+            <div class="map-info">
+                <h3>Next Cleanup: Pasir Ris</h3>
+                <p>Location: 1.381497, 103.955574</p>
+            </div>
+        </section>        <section id="weather" class="weather-section">
+            <h2>Beach Weather Forecast</h2>
             <div class="weather-container">
-                <!-- Weather info will be injected here by JavaScript -->
+                <div class="weather-grid">
+                    <div class="weather-loading">Loading weather data...</div>
+                </div>
+                <div class="weather-details">
+                    <div class="current-conditions">
+                        <h3>Current Conditions</h3>
+                        <div id="current-weather"></div>
+                    </div>
+                    <div class="forecast">
+                        <h3>4-Day Forecast</h3>
+                        <div id="forecast-container"></div>
+                    </div>
+                </div>
             </div>
         </section>
 

@@ -5,18 +5,94 @@ document.addEventListener('DOMContentLoaded', () => {
         weather: null,
         cleanupEvents: [],
         userLocation: null
-    };
-
-    // Weather API integration (placeholder)
-    async function fetchWeather(lat, lon) {
+    };    // Weather API integration using data.gov.sg
+    async function fetchWeather() {
         try {
-            // TODO: Replace with actual weather API integration
-            const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?q=${lat},${lon}`);
-            store.weather = await response.json();
+            // Fetch current weather
+            const currentResponse = await fetch('https://api.data.gov.sg/v1/environment/2-hour-weather-forecast');
+            const currentData = await currentResponse.json();
+            
+            // Fetch 4-day forecast
+            const forecastResponse = await fetch('https://api.data.gov.sg/v1/environment/4-day-weather-forecast');
+            const forecastData = await forecastResponse.json();
+            
+            // Get temperature data
+            const tempResponse = await fetch('https://api.data.gov.sg/v1/environment/air-temperature');
+            const tempData = await tempResponse.json();
+
+            store.weather = {
+                current: currentData,
+                forecast: forecastData,
+                temperature: tempData
+            };
+            
             updateWeatherUI();
         } catch (error) {
             console.error('Error fetching weather:', error);
+            document.querySelector('.weather-loading').textContent = 'Error loading weather data. Please try again later.';
         }
+    }
+
+    // Update weather UI with fetched data
+    function updateWeatherUI() {
+        const currentWeatherEl = document.getElementById('current-weather');
+        const forecastContainer = document.getElementById('forecast-container');
+        
+        if (!store.weather) return;
+
+        // Update current conditions
+        const currentTemp = store.weather.temperature.items[0].readings[0].value;
+        const currentForecast = store.weather.current.items[0].forecasts.find(
+            f => f.area === 'Pasir Ris'
+        );
+
+        currentWeatherEl.innerHTML = `
+            <div class="weather-card">
+                <h4>Pasir Ris - Right Now</h4>
+                <div class="weather-info">
+                    <i class="fas fa-thermometer-half"></i>
+                    <span>${currentTemp.toFixed(1)}°C</span>
+                </div>
+                <div class="weather-info">
+                    <i class="fas fa-cloud"></i>
+                    <span>${currentForecast.forecast}</span>
+                </div>
+            </div>
+        `;
+
+        // Update 4-day forecast
+        const forecastHTML = store.weather.forecast.items[0].forecasts.map(day => `
+            <div class="weather-card">
+                <h4>${formatDate(day.date)}</h4>
+                <div class="weather-info">
+                    <i class="fas fa-cloud"></i>
+                    <span>${day.forecast}</span>
+                </div>
+                <div class="weather-info">
+                    <i class="fas fa-temperature-high"></i>
+                    <span>${day.temperature.high}°C</span>
+                </div>
+                <div class="weather-info">
+                    <i class="fas fa-temperature-low"></i>
+                    <span>${day.temperature.low}°C</span>
+                </div>
+            </div>
+        `).join('');
+
+        forecastContainer.innerHTML = `<div class="forecast-grid">${forecastHTML}</div>`;
+        
+        // Remove loading message
+        document.querySelector('.weather-loading').style.display = 'none';
+    }
+
+    // Helper function to format dates
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-SG', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
     }
 
     // Map initialization (placeholder)
@@ -69,10 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
-    });
-
-    // Initialize features
-    getUserLocation();
+    });    // Initialize features
+    fetchWeather(); // Fetch weather data immediately
     initMap();
     setupMobileMenu();
+    
+    // Refresh weather data every 30 minutes
+    setInterval(fetchWeather, 30 * 60 * 1000);
 });
